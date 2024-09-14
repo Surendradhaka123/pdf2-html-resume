@@ -1,5 +1,9 @@
 # PDF to HTML Resume Generator
 
+## Live Demo
+
+You can view a live demo of the application at [this link](https://pdf2-html-resume.vercel.app/).
+
 ## Overview
 
 The **PDF to HTML Resume Generator** allows users to upload their LinkedIn PDF resume and convert it into an HTML format using the OpenAI API for extracting and generating the required content. This app is built using a combination of JavaScript, Python, and HTML, and is deployed on **Vercel**. The primary objective is to enable users to generate an HTML resume that is both interactive and easy to update.
