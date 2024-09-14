@@ -67,11 +67,13 @@ async def upload_file(
     try:
        
         full_text = read_pdf(content)
-
-        completion = client.chat.completions.create(seed=455,
-        model="gpt-3.5-turbo",
-        messages=[{"role": "system", "content": "Generate a clean HTML resume from given resume pdf text."},
-            {"role": "user", "content":full_text}])
+        try:
+            completion = client.chat.completions.create(seed=455,
+            model="gpt-3.5-turbo",
+            messages=[{"role": "system", "content": "Generate a clean HTML resume from given resume pdf text."},
+                {"role": "user", "content":full_text}])
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"OpenAI API error: {str(e)}")
 
         response=completion.choices[0].message.content
         resume_html = response
@@ -83,8 +85,7 @@ async def upload_file(
     
     
     except Exception as e:
-            print(f"There was an error processing the file {pdfFile.filename}: {str(e)}")
-            return (f"There was an error processing the file {pdfFile.filename}: {str(e)}")
+            return JSONResponse(status_code=500, content={"error": str(e)})
     
     
 @app.get("/view/{unique_id}", response_class=HTMLResponse)
