@@ -70,7 +70,7 @@ async def upload_file(
         try:
             completion = client.chat.completions.create(seed=455,
             model="gpt-3.5-turbo",
-            messages=[{"role": "system", "content": "Generate a good and clean HTML resume from given resume pdf text."},
+            messages=[{"role": "system", "content": "Generate a formatted and explained HTML resume from given resume pdf text."},
                 {"role": "user", "content":full_text}])
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"OpenAI API error: {str(e)}")
