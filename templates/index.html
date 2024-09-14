@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Resume Generator</title>
+    <title>HTML Resume Generator</title>
     <style>
         /* Smaller Spinner Styles */
         .spinner {
@@ -26,40 +26,60 @@
     <script>
         function showSpinner() {
             document.getElementById("spinner").style.display = "block";
-            document.getElementById("submitButton").disabled = true;  // Disable the button to avoid multiple submissions
+            document.getElementById("submitButton").disabled = true;  
         }
 
         function hideSpinner() {
             document.getElementById("spinner").style.display = "none";
-            document.getElementById("submitButton").disabled = false;  // Re-enable the button
+            document.getElementById("submitButton").disabled = false; 
         }
 
         async function handleFormSubmit(event) {
-            event.preventDefault();  // Prevent default form submission
+            event.preventDefault();  
             showSpinner();
 
             const formData = new FormData(event.target);
-            const response = await fetch('/upload', {
-                method: 'POST',
-                body: formData
-            });
 
-            const result = await response.json();
-            hideSpinner();  // Hide the spinner and reactivate the button
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
 
-            if (response.ok) {
-                // Show the view and download buttons
-                document.getElementById("result-buttons").style.display = "block";
-                document.getElementById("view-button").setAttribute("href", result.view_url);
-                document.getElementById("download-button").setAttribute("href", result.download_url);
-            } else {
-                alert("Error: " + (result.error || 'Unknown error'));
+                hideSpinner(); 
+
+                if (response.ok) {
+                    let result;
+                    try {
+                        result = await response.json();  
+                    } catch (e) {
+                        alert('Error: Invalid JSON response.');
+                        return;
+                    }
+
+                   
+                    document.getElementById("result-buttons").style.display = "block";
+                    document.getElementById("view-button").setAttribute("href", result.view_url);
+                    document.getElementById("download-button").setAttribute("href", result.download_url);
+
+                } else {
+                    let errorText;
+                    try {
+                        errorText = await response.text();  
+                    } catch (e) {
+                        errorText = "Unknown error occurred.";
+                    }
+                    alert("Error: " + errorText);
+                }
+            } catch (error) {
+                hideSpinner();
+                alert('Network error or server timeout: ' + error.message);
             }
         }
     </script>
 </head>
 <body>
-    <h2>Generate Your Resume</h2>
+    <h2>Generate Your HTML Resume</h2>
     <form id="resumeForm" onsubmit="handleFormSubmit(event)">
         <label for="pdfFile">Upload your LinkedIn PDF:</label>
         <input type="file" id="pdfFile" name="pdfFile" accept="application/pdf" required>
@@ -70,10 +90,8 @@
         <button type="submit" id="submitButton">Generate Resume</button>
     </form>
 
-    <!-- Spinner -->
     <div id="spinner" class="spinner"></div>
 
-    <!-- Result Buttons -->
     <div id="result-buttons" class="result-buttons">
         <br>
         <a id="view-button" target="_blank"><button>View Resume</button></a>
